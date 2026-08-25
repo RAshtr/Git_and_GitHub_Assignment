@@ -89,3 +89,23 @@ def success_page():
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
+@app.route('/submittodoitem', methods=['POST'])
+def submit_todo_item():
+    item_name = request.form.get('itemName')
+    item_desc = request.form.get('itemDescription')
+    
+    if not item_name or not item_desc:
+        return jsonify({"error": "Item Name and Description are required"}), 400
+    
+    if client is not None:
+        todos_col = db["todos"]
+        todos_col.insert_one({
+            "itemName": item_name,
+            "itemDescription": item_desc
+        })
+    
+    return jsonify({
+        "status": "success",
+        "message": "To-Do item stored successfully in MongoDB Atlas"
+    }), 201
