@@ -1,0 +1,5 @@
+[
+  {"id": 1, "name": "DevOps Pipeline", "status": "Active"},
+  {"id": 2, "name": "Flask Backend", "status": "Running"},
+  {"id": 3, "name": "MongoDB Atlas", "status": "Connected"}
+]
