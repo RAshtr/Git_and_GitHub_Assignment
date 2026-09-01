@@ -2,19 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Success</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f8; }
-        .card { background: white; padding: 25px; border-radius: 8px; max-width: 450px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-        .success { color: #28a745; font-size: 20px; font-weight: bold; }
-        a { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
-    </style>
+    <title>Submission Successful</title>
 </head>
 <body>
-    <div class="card">
-        <p class="success">Data submitted successfully</p>
-        <p>Your record has been stored in MongoDB Atlas.</p>
-        <a href="/">Submit another response</a>
-    </div>
+    <h2>Data submitted successfully</h2>
+    <p>Thank You, {{ name }}! Your submission has been saved to MongoDB Atlas.</p>
+    <a href="/">Submit another response</a>
 </body>
 </html>

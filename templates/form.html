@@ -2,34 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DevOps Assignment - Flask & MongoDB</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f8; }
-        .card { background: white; padding: 25px; border-radius: 8px; max-width: 450px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .error { color: #d9534f; background: #fdf7f7; border: 1px solid #d9534f; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-        input[type="text"], input[type="email"] { width: 100%; padding: 8px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[type="submit"] { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-    </style>
+    <title>Contact Form</title>
 </head>
 <body>
-    <div class="card">
-        <h2>Submit Details</h2>
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
-        <form action="/" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" placeholder="Enter your full name">
+    <h2>User Submission Form</h2>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email">
+    {% if error %}
+        <p style="color: #b30000; background: #ffe6e6; border: 1px solid #b30000; padding: 10px; width: 320px;">
+            <strong>Error:</strong> {{ error }}
+        </p>
+    {% endif %}
 
-            <label for="course">Course/Role:</label>
-            <input type="text" id="course" name="course" placeholder="e.g., DevOps Engineer">
+    <form action="/submit" method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="name" value="{{ name if name else '' }}"><br><br>
 
-            <input type="submit" value="Submit to MongoDB">
-        </form>
-        <p style="margin-top: 15px;"><a href="/api" target="_blank">View /api JSON Route</a></p>
-    </div>
+        <label>Email:</label><br>
+        <input type="text" name="email" value="{{ email if email else '' }}"><br><br>
+
+        <label>Message:</label><br>
+        <textarea name="message">{{ message if message else '' }}</textarea><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>
