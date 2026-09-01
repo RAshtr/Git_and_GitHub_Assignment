@@ -17,3 +17,24 @@ A production-grade Flask web application integrated with MongoDB Atlas, fully co
 ├── .env.example             # Template for required environment variables
 ├── .gitignore               # Security rule to exclude secrets
 └── README.md                # Deployment and setup runbook
+
+# Git and GitHub DevOps Workflow Assignment
+
+This repository demonstrates professional Git workflows, including SSH authentication, multi-branch development, merge conflict handling, sequential atomic commits, git soft resets, and commit rebase history management.
+
+---
+
+## Project Structure
+
+```text
+Git_and_GitHub_Assignment/
+├── templates/
+│   ├── form.html
+│   ├── success.html
+│   └── todo.html
+├── .env.example
+├── .gitignore
+├── app.py
+├── data.json
+├── README.md
+└── requirements.txt
