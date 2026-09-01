@@ -1,12 +1,8 @@
 [
   {"id": 1, "name": "DevOps Pipeline", "status": "Active"},
   {"id": 2, "name": "Flask Backend", "status": "Running"},
-<<<<<<< Updated upstream
   {"id": 3, "name": "MongoDB Atlas", "status": "Connected"},
   {"version": "1.0.0"},
   {"status": "Modified directly on main branch"}
   
-=======
-  {"id": 3, "name": "MongoDB Atlas", "status": "Connected"}
->>>>>>> Stashed changes
 ]
