@@ -1,94 +1,122 @@
-import os
 import json
 import logging
-from flask import Flask, jsonify, render_template, request, redirect, url_for
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, PyMongoError
+import os
+import certifi
 from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from flask import Flask, jsonify, render_template, request
+from pymongo import MongoClient
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler()]
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+load_dotenv()
 
 app = Flask(__name__)
 
-# Securely retrieve URI from environment
+# Secure MongoDB Atlas connection using certifi CA bundle
 MONGO_URI = os.getenv("MONGO_URI")
+try:
+    client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
+    db = client.get_database("student_assignment_db")
+    collection = db.user_submissions
+    logging.info("Connected to MongoDB Atlas successfully.")
+except Exception as err:
+    logging.error("MongoDB Atlas connection initialization failed: %s", err)
+    client = None
+    collection = None
 
-client = None
-if MONGO_URI:
-    try:
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
-        db = client["devops_assignment_db"]
-        collection = db["submissions"]
-        logging.info("MongoDB client configured successfully.")
-    except Exception as e:
-        logging.error(f"Failed to initialize MongoDB client: {e}")
-else:
-    logging.warning("MONGO_URI is not defined in environment variables.")
-
-@app.route('/health', methods=['GET'])
+# Health Check Route
+@app.route("/health", methods=["GET"])
 def health_check():
-    """Health check endpoint for container orchestrators and monitoring."""
-    return jsonify({"status": "healthy", "service": "flask-mongodb-app"}), 200
+    return jsonify({"status": "UP", "message": "Service is healthy"}), 200
 
-@app.route('/api', methods=['GET'])
+# Task 1: JSON API route reading from backend data.json file
+@app.route("/api", methods=["GET"])
 def get_api_data():
     try:
-        data_path = os.path.join(os.path.dirname(__file__), 'data.json')
-        with open(data_path, 'r') as file:
-            data = json.load(file)
-        logging.info("Fetched /api data successfully.")
-        return jsonify(data), 200
-    except Exception as e:
-        logging.error(f"Error loading data.json: {e}")
-        return jsonify({"error": "Failed to read backend data file", "details": str(e)}), 500
+        data_file_path = os.path.join(os.path.dirname(__file__), "data.json")
+        with open(data_file_path, "r") as file:
+            items = json.load(file)
+        logging.info("Read %d records from data.json", len(items))
+        return jsonify(items), 200
+    except FileNotFoundError:
+        logging.error("data.json file not found.")
+        return jsonify({"error": "Backend data file not found"}), 404
+    except Exception as err:
+        logging.error("Failed to read data.json: %s", err)
+        return jsonify({"error": "Internal server error"}), 500
 
-@app.route('/', methods=['GET', 'POST'])
-def handle_form():
-    if request.method == 'POST':
-        name = request.form.get('name', '').strip()
-        email = request.form.get('email', '').strip()
-        course = request.form.get('course', '').strip()
+# Task 2: Home Route (Frontend Form UI)
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("form.html")
 
-        if not name or not email or not course:
-            logging.warning("Form validation failed: Missing fields.")
-            return render_template('form.html', error="All fields are required. Please fill out the full form.")
+# Task 2: Form Submission Handling with Validation and Error Safety
+@app.route("/submit", methods=["POST"])
+def submit():
+    user_name = request.form.get("name", "").strip()
+    user_email = request.form.get("email", "").strip()
+    user_message = request.form.get("message", "").strip()
 
-        try:
-            if client is None:
-                raise ConnectionFailure("Could not connect to database backend.")
-            
-            client.admin.command('ping')
+    # Input validation: check for empty fields
+    if not user_name or not user_email or not user_message:
+        logging.warning("Validation failed: empty field submitted.")
+        return render_template(
+            "form.html",
+            error="All fields are required. Please fill in your name, email, and message.",
+            name=user_name,
+            email=user_email,
+            message=user_message,
+        ), 400
 
-            submission_data = {
-                "name": name,
-                "email": email,
-                "course": course
-            }
-            collection.insert_one(submission_data)
-            logging.info(f"Successfully inserted submission for: {email}")
-            return redirect(url_for('success_page'))
+    # Basic email format check
+    if "@" not in user_email or "." not in user_email:
+        logging.warning("Validation failed: invalid email format (%s).", user_email)
+        return render_template(
+            "form.html",
+            error="Please enter a valid email address.",
+            name=user_name,
+            email=user_email,
+            message=user_message,
+        ), 400
 
-        except (ConnectionFailure, PyMongoError, Exception) as err:
-            logging.error(f"Database insertion failure: {err}")
-            return render_template('form.html', error=f"Database Error: {str(err)}")
+    if collection is None:
+        logging.error("Database unavailable during submission.")
+        return render_template(
+            "form.html",
+            error="Database service unavailable. Please try again later.",
+            name=user_name,
+            email=user_email,
+            message=user_message,
+        ), 500
 
-    return render_template('form.html', error=None)
+    try:
+        submission_data = {
+            "name": user_name,
+            "email": user_email,
+            "message": user_message
+        }
+        collection.insert_one(submission_data)
+        logging.info("Inserted submission for: %s", user_email)
+        # On success: render success page with user details
+        return render_template("success.html", name=user_name)
 
-@app.route('/success')
-def success_page():
-    return render_template('success.html')
+    except Exception as err:
+        logging.error("MongoDB insertion error: %s", err)
+        # On error: display error on the same page without redirecting
+        return render_template(
+            "form.html",
+            error="Failed to save your submission to database. Please try again.",
+            name=user_name,
+            email=user_email,
+            message=user_message,
+        ), 500
 
+<<<<<<< Updated upstream
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+<<<<<<< HEAD
 
 @app.route('/submittodoitem', methods=['POST'])
 def submit_todo_item():
@@ -109,3 +137,9 @@ def submit_todo_item():
         "status": "success",
         "message": "To-Do item stored successfully in MongoDB Atlas"
     }), 201
+=======
+=======
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
+>>>>>>> Stashed changes
+>>>>>>> RAshtr
