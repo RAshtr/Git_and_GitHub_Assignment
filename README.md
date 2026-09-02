@@ -1,40 +1,30 @@
-# DevOps Project: Flask & MongoDB Atlas Integration
+# Git and GitHub Assignment - Flask & MongoDB Integration
 
-A production-grade Flask web application integrated with MongoDB Atlas, fully containerized using Docker, and automated using GitHub Actions CI/CD pipeline.
+This repository contains a Flask web application integrated with MongoDB Atlas, managed through Git version control following branching, merging, conflict resolution, and rebasing workflows.
 
-## 📁 Repository Structure
-├── .github/workflows/
-│   └── ci.yml               # Automated CI/CD workflow (Tests + Docker build)
-├── templates/
-│   ├── form.html            # User submission form with validation alerts
-│   └── success.html         # Success redirection view
-├── app.py                   # Core application logic & endpoints
-├── data.json                # Task 1 JSON data source
-├── test_app.py              # Pytest automated test suite
-├── Dockerfile               # Container build instructions
-├── docker-compose.yml       # Multi-container orchestration
-├── requirements.txt         # Pinned production dependencies
-├── .env.example             # Template for required environment variables
-├── .gitignore               # Security rule to exclude secrets
-└── README.md                # Deployment and setup runbook
+## Features
+- **Task 1:** Flask setup with MongoDB Atlas integration and `/api` endpoint reading `data.json`.
+- **Task 2:** Merge conflict simulation and resolution between `main` and `RAshtr_new`.
+- **Task 3:** Frontend (`master_1`) and backend (`master_2`) branching and merging.
+- **Task 4:** Sequential form commits, `git reset --soft` consolidation, and branch rebase.
+- **DevOps:** Docker containerization (`Dockerfile`, `docker-compose.yml`) and GitHub Actions workflow (`.github/workflows/ci.yml`).
 
-# Git and GitHub DevOps Workflow Assignment
-
-This repository demonstrates professional Git workflows, including SSH authentication, multi-branch development, merge conflict handling, sequential atomic commits, git soft resets, and commit rebase history management.
+## Project Structure
 
 ---
 
 ## Project Structure
 
-```text
-Git_and_GitHub_Assignment/
+`├── .github/workflows/ci.yml
 ├── templates/
 │   ├── form.html
 │   ├── success.html
 │   └── todo.html
 ├── .env.example
 ├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
 ├── app.py
 ├── data.json
-├── README.md
 └── requirements.txt
